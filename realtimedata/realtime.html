@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time Data</title>
+    <style>
+        body{text-align: center;}
+        #enterdetails{float: left; width: 50%; background-color: darkslategrey; color: floralwhite;}
+        #findDetails{float: left; width: 50%; background-color: floralwhite; color: darkslategray;}
+    </style>
+</head>
+<body>
+    <div id="enterdetails">
+        <h1>ENTER DETAILS</h1>
+        <h4>ID</h4>
+        <input id="enterId" type="text">
+
+        <h4>Name</h4>
+        <input id="enterName" type="text">
+
+        <h4>Age</h4>
+        <input id="enterAge" type="number"> <br><br>
+
+        <button id="insert">INSERT</button>
+        <button id="update">UPDATE</button>
+        <button id="remove">REMOVE</button>
+    </div><br><br>
+    <div id="findDetails">
+        <h1>Find By ID</h1>
+        <h4>ID</h4>
+        <input id="findId" type="text"> <br><br>
+        <button id="find">FIND</button>
+        <h3 id="findName" type="text"></h3>
+        <h3 id="findAge" type="text"></h3><br><br>
+
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyB9yf-lQqCftmgKT8cbNmBWwnYYJd_EJ1k",
+          authDomain: "realtimedata-6b4fd.firebaseapp.com",
+          databaseURL: "https://realtimedata-6b4fd-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "realtimedata-6b4fd",
+          storageBucket: "realtimedata-6b4fd.appspot.com",
+          messagingSenderId: "1048798519033",
+          appId: "1:1048798519033:web:88cf2ea6c160a2922ecc28"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        import{getDatabase, set, get, update, remove, ref, child}
+        from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js"
+
+        const db = getDatabase(app)
+
+        var enterId = document.querySelector("#enterId");
+        var enterName = document.querySelector("#enterName");
+        var enterAge = document.querySelector("#enterAge");
+        var findId = document.querySelector("#findId");
+        var findName = document.querySelector("#findName");
+        var findAge = document.querySelector("#findAge");
+
+        var insertBtn = document.querySelector("#insert");
+        var updateBtn = document.querySelector("#update");
+        var removeBtn = document.querySelector("#remove");
+        var findBtn = document.querySelector("#find");
+
+        function insertData(){
+            set( ref(db, "people/" + enterId.value),{
+                Name: enterName.value,
+                ID: enterId.value,
+                Age: enterAge.value
+            })
+            .then(()=>{
+                alert("message added successfully!")
+            })
+            .catch((error)=>{
+                alert("error")
+            })
+
+        }
+        function findData(){
+            const dbref = ref(db);
+            get(child(dbref, "people/" + findId.value))
+            .then((snapshot)=>{
+                if(snapshot.exists()){
+                    findName.innerHTML = "Name:" + snapshot.val().Name;
+                    findAge.innerHTML = "Age:" + snapshot.val().Age;
+                }
+                else{
+                    alert("no data found");
+                }
+            })
+            .catch((error)=>{
+                alert(error)
+            })
+        }
+        function updateData(){
+            update(ref(db, "people/" + enterId.value),{
+                Name: enterName.value,
+                Age: enterAge.value
+            })
+            .then(()=>{
+                alert("data updated successfully!")
+            })
+            .catch((error)=>{
+                alert(error)
+            });
+        }
+        function removeData(){
+            remove(ref(db, "people/" + enterId.value))
+            .then(()=>{
+                alert( "data removed successfully!");
+            })
+            .catch((error)=>{
+                alert(error);
+            });
+            
+        }
+
+        insertBtn.addEventListener('click', insertData)
+        findBtn.addEventListener('click', findData)
+        updateBtn.addEventListener('click', updateData)
+        removeBtn.addEventListener('click', removeData)
+      </script>
+    
+</body>
+</html>
